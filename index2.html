@@ -2,577 +2,278 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Tabs</title>
-
+    <title>코르부스 답 V2.0 - Immortal Edition</title>
     <style>
-body{
-    background-color: aliceblue;
-}
+        /* 디아블로 느낌의 Cinzel, Noto Serif 폰트 로드 */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
 
-/* 화면설정 */
-.wrapper{
-    display: flex;        
-    flex-direction: column;
-    align-items: center;
-}
+        :root {
+            --bg-main: #0a0a0c;      /* 깊은 심연의 블랙 */
+            --card-bg: #141619;      /* 어두운 철갑 질감 */
+            --accent: #bf1e2e;       /* 🩸 선혈의 레드 */
+            --gold: #c3a36a;         /* 고대 유물 골드 */
+            --gold-dim: #7a6341;     /* 바랜 금색 */
+            --main-text: #e3d9c6;     /* 양피지 색 텍스트 */
+            --dim-text: #6b6b6b;
+        }
 
-.tab{
-    cursor: pointer;
-    padding: 10px 20px;
-    margin: 0px 2px;
-    background-color: #fff;
-    color: lightgray;
-    display: inline-block;
-    border-radius: 3px 3px 0px 0px;
-}
+        body {
+            background-color: var(--bg-main);
+            /* 미세한 노이즈/텍스처 배경 효과 */
+            background-image: radial-gradient(circle at center, rgba(191, 30, 46, 0.05) 0%, transparent 70%);
+            font-family: 'Noto Serif KR', serif;
+            color: var(--main-text);
+            margin: 0; padding: 0;
+            display: flex; justify-content: center;
+        }
 
-.panels{
-    background-color: white;
-    min-height: 200px;
-    width: 100%;
-    border-radius: 3px;
-    overflow: hidden;
-    text-align: left;
-    padding:10px;
-	border: 1px solid #73B9C9;
+        .wrapper { width: 100%; max-width: 1100px; padding: 0 40px 150px 40px; }
 
-}
+        /* 타이틀 영역 */
+        .header-title { 
+            text-align: center; 
+            padding: 20px 0 20px 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 20px; 
+        }
 
-.panel{
-    display: none;
-}
+        /* 🚀 [추가] 디아블로 이모탈 로고 */
+        .header-title .diablo-logo {
+            width: 100%;
+            max-width: 400px; /* 로고 너비 조정 */
+            height: auto;
+            opacity: 0.9;
+        }
 
-.panel-title{
-    font-size: 1.5em;
-    font-weight: bold;
-}
+        .header-title h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem; font-weight: 900; margin: 0;
+            letter-spacing: 4px; color: var(--gold);
+            text-shadow: 0 0 20px rgba(195, 163, 106, 0.3), 2px 2px 4px #000;
+            display: flex; align-items: baseline; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
 
-p{
-    font-size: 1.5em;
-    color: blue;
-    text-align: left;
-}
-.box1 {
-    float:left; 
-    width:180px; 
-    margin-left: 50px;
-    font-size: 12px;
-    text-align: left;  
-    color:#3b7c10;
-    font-weight: bold;
-    height:Auto; 
-    line-height: 22px;
-}
-    
-.box2 {
-    margin-left: 50px;
-    padding-bottom: 5px;
-    display:inline-block; 
-    width:Auto; 
-    height:Auto; 
-    color:red;
-    
-    font-size: 12px;
-    font-weight: bold;
-    line-height: 22px;
-    }  
-.radio{
-     display: none;  /*체크박스 숨기기 */
-}
+        /* 🚀 [변경] V2.0 빨간 칼라 (선택 시와 동일) */
+        .header-title h1 .ver { color: var(--accent); font-size: 1.8rem; font-style: italic; text-shadow: 0 0 10px rgba(191, 30, 46, 0.5); }
+        .header-title h1 .author { 
+            font-family: 'Noto Serif KR', serif; 
+            color: var(--gold); font-size: 1rem; font-weight: 400; letter-spacing: 1px;
+        }
 
-/* display: none인 설명창을 각 조건에 따라 block해주기 */
-#s1:checked ~ .panels #s1-panel,
-#s2:checked ~ .panels #s2-panel,
-#s4:checked ~ .panels #s4-panel,
-#s5:checked ~ .panels #s5-panel,
-#s6:checked ~ .panels #s6-panel,
-#s7:checked ~ .panels #s7-panel,
-#s8:checked ~ .panels #s8-panel,
-#s9:checked ~ .panels #s9-panel,
-#s10:checked ~ .panels #s10-panel,
-#s11:checked ~ .panels #s11-panel,
-#s12:checked ~ .panels #s12-panel,
-#s13:checked ~ .panels #s13-panel,
-#s14:checked ~ .panels #s14-panel,
-#s15:checked ~ .panels #s15-panel,
-#s16:checked ~ .panels #s16-panel,
-#s3:checked ~ .panels #s3-panel{
-    display: block;
-}
+        /* 🚀 탭 메뉴: 금속 버튼 느낌 */
+        .tabs { 
+            position: sticky; top: 0; z-index: 1000;
+            background-color: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; 
+            padding: 25px 0; margin-bottom: 120px;
+            border-bottom: 1px solid var(--gold-dim);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
 
-/* 탭 위쪽 디자인(없어도 상관x) */
-#s1:checked ~ .tabs #t1,
-#s2:checked ~ .tabs #t2,
-#s4:checked ~ .tabs #t4,
-#s5:checked ~ .tabs #t5,
-#s6:checked ~ .tabs #t6,
-#s7:checked ~ .tabs #t7,
-#s8:checked ~ .tabs #t8,
-#s9:checked ~ .tabs #t9,
-#s10:checked ~ .tabs #t10,
-#s11:checked ~ .tabs #t11,
-#s12:checked ~ .tabs #t12,
-#s13:checked ~ .tabs #t13,
-#s14:checked ~ .tabs #t14,
-#s15:checked ~ .tabs #t15,
-#s16:checked ~ .tabs #t16,
-#s3:checked ~ .tabs #t3{
-    background-color: #fa5a5a;
-    color: #fff;
-    border-top: 3px solid #6698cb;
-}
-</style>
+        .tab {
+            cursor: pointer; padding: 12px 20px; 
+            background: #1a1c20;
+            color: var(--gold-dim);
+            border: 1px solid #3a3a3a;
+            border-radius: 4px; /* 각진 느낌 */
+            font-weight: 700; font-size: 18px; 
+            transition: all 0.3s;
+            font-family: 'Cinzel', serif;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .radio { display: none; }
+
+        /* 탭 활성화: 붉은 보석이 박힌 듯한 효과 */
+        #s1:checked ~ .tabs #t1, #s2:checked ~ .tabs #t2, #s3:checked ~ .tabs #t3,
+        #s5:checked ~ .tabs #t5, #s6:checked ~ .tabs #t6, #s7:checked ~ .tabs #t7,
+        #s8:checked ~ .tabs #t8, #s9:checked ~ .tabs #t9, #s11:checked ~ .tabs #t11,
+        #s14:checked ~ .tabs #t14, #s16:checked ~ .tabs #t16 {
+            background: linear-gradient(to bottom, #8e1622, #4a0b12);
+            color: #fff; 
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(191, 30, 46, 0.6);
+            transform: scale(1.05);
+        }
+
+        .panels { display: flex; flex-direction: column; gap: 140px; }
+        
+        /* 패널: 고대 유물함 느낌 */
+        .panel {
+            position: relative; 
+            background: var(--card-bg);
+            border: 1px solid #3a342a;
+            padding: 25px 45px;
+            order: 2; opacity: 0.2; transition: 0.5s;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        /* 이정표: 고딕 양식 자음 */
+        .panel::before {
+            position: absolute; top: -100px; left: 0; bottom: 30px;
+            font-family: 'Cinzel', serif;
+            font-size: 80px; font-weight: 900; 
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(0,0,0,1);
+            opacity: 1; z-index: -1;
+        }
+
+        /* 🚀 [변경] 이정표 활성화 시 빨간 칼라 (선택 시) */
+        #s1-panel::before { content: "ㄱ"; } #s2-panel::before { content: "ㄴ"; }
+        #s3-panel::before { content: "ㄷ"; } #s5-panel::before { content: "ㅁ"; }
+        #s6-panel::before { content: "ㅂ"; } #s16-panel::before { content: "ㅃ"; }
+        #s7-panel::before { content: "ㅅ"; } #s8-panel::before { content: "ㅇ"; }
+        #s9-panel::before { content: "ㅈ"; } #s11-panel::before { content: "ㅋ"; }
+        #s14-panel::before { content: "ㅎ"; }
+
+        /* 선택된 패널 강조 */
+        #s1:checked ~ .panels #s1-panel, #s2:checked ~ .panels #s2-panel,
+        #s3:checked ~ .panels #s3-panel, #s5:checked ~ .panels #s5-panel,
+        #s6:checked ~ .panels #s6-panel, #s7:checked ~ .panels #s7-panel,
+        #s8:checked ~ .panels #s8-panel, #s9:checked ~ .panels #s9-panel,
+        #s11:checked ~ .panels #s11-panel, #s14:checked ~ .panels #s14-panel,
+        #s16:checked ~ .panels #s16-panel {
+            order: 1; opacity: 1; 
+            border: 1px solid var(--gold);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 20px rgba(195, 163, 106, 0.1);
+        }
+
+        /* 🚀 [변경] 이정표 활성화 시 빨간 칼라 (선택 시) */
+        #s1:checked ~ .panels #s1-panel::before, #s2:checked ~ .panels #s2-panel::before,
+        #s3:checked ~ .panels #s3-panel::before, #s5:checked ~ .panels #s5-panel::before,
+        #s6:checked ~ .panels #s6-panel::before, #s7:checked ~ .panels #s7-panel::before,
+        #s8:checked ~ .panels #s8-panel::before, #s9:checked ~ .panels #s9-panel::before,
+        #s11:checked ~ .panels #s11-panel::before, #s14:checked ~ .panels #s14-panel::before,
+        #s16:checked ~ .panels #s16-panel::before {
+            color: var(--gold); /* 활성화 시 레드 */
+            opacity: 0.8; 
+            transform: translateY(-5px);
+        }
+
+        /* 질문-답변 리스트 */
+        .panel > div {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 0; border-bottom: 1px solid rgba(195, 163, 106, 0.1); gap: 30px;
+        }
+        .panel > div:last-child { border: none; }
+        .box1 { flex: 1; font-size: 18px; color: var(--main-text); line-height: 1.6; font-weight: 400; }
+        .box2 { 
+            flex-shrink: 0; color: var(--gold); 
+            font-family: 'Cinzel', serif;
+            font-weight: 700; font-size: 30px; 
+            text-shadow: 0 0 10px rgba(191, 30, 46, 0.5);
+        }
+
+        /* 📱 모바일 최적화 */
+        @media (max-width: 768px) {
+            .wrapper { padding: 0 20px 100px 20px; }
+            .header-title h1 { font-size: 2.2rem; }
+            .header-title h1 .ver { font-size: 1.2rem; }
+            .tabs { margin-bottom: 80px; }
+            .tab { padding: 10px 14px; font-size: 15px; }
+            .panel { padding: 10px 25px; }
+            .panel::before { font-size: 50px; top: -70px; }
+            .box1 { font-size: 15px; }
+            .box2 { font-size: 22px; }
+            .panels { gap: 100px; }
+        }
+    </style>
 </head>
 <body>
     <div class="wrapper">
-        <input class ="radio" type="radio" name="group" id="s1" checked>
-        <input class ="radio" type="radio" name="group" id="s2">
-        <input class ="radio" type="radio" name="group" id="s3">
-        <input class ="radio" type="radio" name="group" id="s4">
-        <input class ="radio" type="radio" name="group" id="s5">
-        <input class ="radio" type="radio" name="group" id="s6">
-        <input class ="radio" type="radio" name="group" id="s7">
-        <input class ="radio" type="radio" name="group" id="s8">
-        <input class ="radio" type="radio" name="group" id="s9">
-        <input class ="radio" type="radio" name="group" id="s10">
-        <input class ="radio" type="radio" name="group" id="s11">
-        <input class ="radio" type="radio" name="group" id="s12">
-        <input class ="radio" type="radio" name="group" id="s13">
-        <input class ="radio" type="radio" name="group" id="s14">
-      <!--  <input class ="radio" type="radio" name="group" id="s15"> -->
-        <input class ="radio" type="radio" name="group" id="s16">
+        <div class="header-title">
+            
+            <h1>
+                코르부스 답 <span class="ver">V2.0</span> 
+                <span class="author">by.狂夜</span>
+            </h1>
+        </div>
 
+        <input class="radio" type="radio" name="group" id="s1" checked>
+        <input class="radio" type="radio" name="group" id="s2"><input class="radio" type="radio" name="group" id="s3">
+        <input class="radio" type="radio" name="group" id="s5"><input class="radio" type="radio" name="group" id="s6">
+        <input class="radio" type="radio" name="group" id="s16"><input class="radio" type="radio" name="group" id="s7">
+        <input class="radio" type="radio" name="group" id="s8"><input class="radio" type="radio" name="group" id="s9">
+        <input class="radio" type="radio" name="group" id="s11"><input class="radio" type="radio" name="group" id="s14">
 
         <div class="tabs">
-            <label class = "tab" id= "t1" for="s1">ㄱ</label>
-            <label class = "tab" id= "t2" for="s2">ㄴ</label>
-            <label class = "tab" id= "t3" for="s3">ㄷ</label>
-        <!--    <label class = "tab" id= "t4" for="s4">ㄹ</label> -->
-            <label class = "tab" id= "t5" for="s5">ㅁ</label>
-            <label class = "tab" id= "t6" for="s6">ㅂ</label>
-	<label class = "tab" id= "t16" for="s16">ㅃ</label>
-            <label class = "tab" id= "t7" for="s7">ㅅ</label>
-            <label class = "tab" id= "t8" for="s8">ㅇ</label>
-            <label class = "tab" id= "t9" for="s9">ㅈ</label>
-         <!--   <label class = "tab" id= "t10" for="s10">ㅊ</label> -->
-            <label class = "tab" id= "t11" for="s11">ㅋ</label>
-         <!--   <label class = "tab" id= "t12" for="s12">ㅌ</label> -->
-         <!--   <label class = "tab" id= "t13" for="s13">ㅍ</label> -->
-            <label class = "tab" id= "t14" for="s14">ㅎ</label>
-<!--            <label class = "tab" id= "t15" for="s15">ㅎ</label> -->
-
+            <label class="tab" id="t1" for="s1">ㄱ</label>
+            <label class="tab" id="t2" for="s2">ㄴ</label>
+            <label class="tab" id="t3" for="s3">ㄷ</label>
+            <label class="tab" id="t5" for="s5">ㅁ</label>
+            <label class="tab" id="t6" for="s6">ㅂ</label>
+            <label class="tab" id="t16" for="s16">ㅃ</label>
+            <label class="tab" id="t7" for="s7">ㅅ</label>
+            <label class="tab" id="t8" for="s8">ㅇ</label>
+            <label class="tab" id="t9" for="s9">ㅈ</label>
+            <label class="tab" id="t11" for="s11">ㅋ</label>
+            <label class="tab" id="t14" for="s14">ㅎ</label>
         </div>
 
         <div class="panels">
-            <div class="panel" id = "s1-panel">
-                    <div >
-       			     <div class="box1" >
-       			         갈색 쥐가 27마리…. 몇 마리?          
-       			     </div>
-      		      <div class="box2" >
-      		          46            
-    		        </div>
-  		      </div>
-         
-
-        <div>
-            <div class="box1" >
-                고통에서 환희, 고뇌의 여제
+            <div class="panel" id="s1-panel">
+                <div><div class="box1">갈색 쥐가 27마리…. 몇 마리?</div><div class="box2">46</div></div>
+                <div><div class="box1">고통에서 환희, 고뇌의 여제</div><div class="box2">안다리엘</div></div>
+                <div><div class="box1">고통의 군주와 구더기 왕</div><div class="box2">두리엘</div></div>
             </div>
-            <div class="box2" >
-                안다리엘
+            <div class="panel" id="s2-panel">
+                <div><div class="box1">나는 보이지 않는 눈</div><div class="box2">바늘</div></div>
+                <div><div class="box1">나는 소리 없이 떨어질 수</div><div class="box2">밤</div></div>
+                <div><div class="box1">나의 뾰족한 털은</div><div class="box2">붓</div></div>
+                <div><div class="box1">너무나도 갸날프기에 늘 속삭임</div><div class="box2">침묵</div></div>
             </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                고통의 군주와 구더기 왕
+            <div class="panel" id="s3-panel">
+                <div><div class="box1">대악마 중 최연장자이며, 증오</div><div class="box2">메피스토</div></div>
+                <div><div class="box1">대악마 중 가장 어리지만</div><div class="box2">디아블로</div></div>
+                <div><div class="box1">두 번째 불멸자</div><div class="box2">아키바</div></div>
+                <div><div class="box1">드루이드에게 가르침을 전수한</div><div class="box2">바실리</div></div>
             </div>
-            <div class="box2" >
-                두리엘
-            </div>        
-        </div>
-</div>
-            <div class="panel" id = "s2-panel">
-               <div>
-            <div class="box1" >
-                나는 보이지 않는 눈        
+            <div class="panel" id="s5-panel">
+                <div><div class="box1">만물을 통틀어 가장 위대한</div><div class="box2">임페리우스</div></div>
+                <div><div class="box1">모든 야만용사의 숭배</div><div class="box2">불카토스</div></div>
             </div>
-            <div class="box2" >
-                바늘            
+            <div class="panel" id="s6-panel">
+                <div><div class="box1">불타는 지옥에서 태어난</div><div class="box2">7</div></div>
             </div>
-        </div>
-  
-        <div>
-            <div class="box1" >
-                나는 소리 없이 떨어질 수 
+            <div class="panel" id="s16-panel">
+                <div><div class="box1">빼앗긴 것이 많을 수록</div><div class="box2">발자국</div></div>
             </div>
-            <div class="box2" >
-                밤
+            <div class="panel" id="s7-panel">
+                <div><div class="box1">살아있으나 숨 쉬지 않으며</div><div class="box2">물고기</div></div>
+                <div><div class="box1">성역이 창조됐을 당시 앙기리스</div><div class="box2">5</div></div>
+                <div><div class="box1">성역의 창조를 도운 악마</div><div class="box2">릴리트</div></div>
             </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                나의 뾰족한 털은
+            <div class="panel" id="s8-panel">
+                <div><div class="box1">앙기리스 의회의 첫 수장</div><div class="box2">말티엘</div></div>
+                <div><div class="box1">야만용사가 17명의 천사</div><div class="box2">29</div></div>
+                <div><div class="box1">이빨이 무성하나 물지 못하니</div><div class="box2">빗</div></div>
+                <div><div class="box1">이 천사는 인류의 탄생을 도왔</div><div class="box2">이나리우스</div></div>
             </div>
-            <div class="box2" >
-                붓
-            </div>        
-        </div>
-   
-        <div>
-            <div class="box1" >
-                너무나도 갸날프기에 늘 속삭임
+            <div class="panel" id="s9-panel">
+                <div><div class="box1">정의의 대천사의 무기는 바로</div><div class="box2">엘드루인</div></div>
+                <div><div class="box1">절대 신뢰해서는 안되면 거짓</div><div class="box2">벨리알</div></div>
+                <div><div class="box1">지옥의 최고위 장군이자</div><div class="box2">아즈모단</div></div>
             </div>
-            <div class="box2" >
-                침묵
-            </div>        
-        </div>
+            <div class="panel" id="s11-panel">
+                <div><div class="box1">케잔 남부는 무엇으로?</div><div class="box2">정글스</div></div>
             </div>
-
-            <div class="panel" id = "s3-panel">
-               <div>
-            <div class="box1" >
-                다음 중 대악마에 해당  
-            </div>
-            <div class="box2" >
-                아즈모단            
+            <div class="panel" id="s14-panel">
+                <div><div class="box1">호수를 품고 있으나</div><div class="box2">지도</div></div>
+                <div><div class="box1">희망의 화신이자</div><div class="box2">아우리엘</div></div>
             </div>
         </div>
-  
-        <div>
-            <div class="box1" >
-                대악마 중 최연장자이며, 증오
-            </div>
-            <div class="box2" >
-                메피스토
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                대악마 중 가장 어리지만
-            </div>
-            <div class="box2" >
-                디아블로
-            </div>        
-        </div>
-   
-        <div>
-            <div class="box1" >
-                두 번째 불멸자
-            </div>
-            <div class="box2" >
-                아키바
-            </div>        
-        </div>
-
-        <div>
-            <div class="box1" >
-                드높은 천상의 천사가
-            </div>
-            <div class="box2" >
-                수정회랑
-            </div>        
-        </div>
-
-        <div>
-            <div class="box1" >
-                드루이드에게 가르침을 전수한
-            </div>
-            <div class="box2" >
-                바실리
-            </div>        
-        </div>
-
-            </div>
-
- <div class="panel" id = "s4-panel">
-             
-            </div>
-
- <div class="panel" id = "s5-panel">
-               <div>
-            <div class="box1" >
-                만물을 통틀어 가장 위대한
-            </div>
-            <div class="box2" >
-                임페리우스
-            </div>        
-        </div>
-
-        <div>
-            <div class="box1" >
-                모든 야만용사의 숭배
-            </div>
-            <div class="box2" >
-                불카토스
-            </div>        
-        </div>     
-            </div>
-
- <div class="panel" id = "s6-panel">
-              <div>
-            <div class="box1" >
-                불타는 지옥에서 태어난
-            </div>
-
-            <div class="box2" >
-                7
-            </div>
-        </div>
-
-            </div>
-
- <div class="panel" id = "s7-panel">
-                 <div>
-            <div class="box1" >
-                살아있으나 숨 쉬지 않으며
-            </div>
-
-            <div class="box2" >
-                물고기
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                성역이 창조됐을 당시 앙기리스
-            </div>
-
-            <div class="box2" >
-                5
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                성역을 비추는 달의 수
-            </div>
-
-            <div class="box2" >
-                1
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                성역의 창조를 도운 악마
-            </div>
-
-            <div class="box2" >
-                릴리트
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                세계석은 여러이름
-            </div>
-
-            <div class="box2" >
-                수정 창
-            </div>
-        </div>
-
-            </div>
-
- <div class="panel" id = "s8-panel">
-         <div>
-            <div class="box1" >
-                앙기리스 의회의 첫 수장
-                
-            </div>
-
-            <div class="box2" >
-                말티엘
-
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-              야만용사가 17명의 천사
-
-            </div>
-
-            <div class="box2" >
-                29
-
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                영원한 전쟁을 치르는
-
-            </div>
-
-            <div class="box2" >
-                바알
- 
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                운명의 두루마리를 가진자
-
-            </div>
-
-            <div class="box2" >
-                이테리엘
-    
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                이 마법단은 최초의 성역
-
-            </div>
-
-            <div class="box2" >
-                비제레이
-    
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                이빨이 무성하나 물지 못하니
-
-            </div>
-
-            <div class="box2" >
-                빗
-
-            </div>
-        </div>
-
-        <div>
-            <div class="box1" >
-                이 천사는 인류의 탄생을 도왔
-            </div>
-
-            <div class="box2" >
-                이나리우스
-            </div>
-        </div>
-
-            </div>
-
- <div class="panel" id = "s9-panel">
-              <div>
-            <div class="box1" >
-                정의의 대천사의 무기는 바로
-
-            </div>
-
-            <div class="box2" >
-                엘드루인
-
-            </div>
-        </div>
-        <div>
-            <div class="box1" >
-                절대 신뢰해서는 안되면 거짓
-
-            </div>
-
-            <div class="box2" >
-                벨리알
-
-            </div>
-        </div>
-        <div>
-            <div class="box1" >
-                주사위 놀이를 즐기는
-
-            </div>
-
-            <div class="box2" >
-                11
-            </div>
-        </div>
-        <div>
-            <div class="box1" >
-                지옥의 최고위 장군이자
-            </div>
-
-            <div class="box2" >
-
-                아즈모단
-            </div>
-        </div>
-
-            </div>
-
- <div class="panel" id = "s10-panel">
-               
-            </div>
-
- <div class="panel" id = "s11-panel">
-                   <div>
-        <div class="box1" >
-            케잔 남부는 무엇으로?
-        </div>
-
-        <div class="box2" >
-            정글스
-        </div>
-            </div>
-       </div>
- <div class="panel" id = "s12-panel">
-              
-            </div>
-
- <div class="panel" id = "s13-panel">
-                 
-            </div>
-
- <div class="panel" id = "s14-panel">
-     <div>
-            <div class="box1" >
-                호수를 품고 있으나
-
-            </div>
-
-            <div class="box2" >
-                지도
-
-            </div>
-        </div>
-        <div>
-            <div class="box1" >
-                희망의 화신이자
-            </div>
-
-            <div class="box2" >
-                아우리엘
-            </div>
-        </div>
-            </div>
-
-
- <div class="panel" id = "s16-panel">
-                 <div>
-            <div class="box1" >
-                빼앗긴 것이 많을 수록
-            </div>
-
-            <div class="box2" >
-            발자국
-            </div>
-            </div>
-
-
-        </div>
-          
     </div>
+
+    <script>
+        document.querySelectorAll('input[name="group"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
 </body>
 </html>
