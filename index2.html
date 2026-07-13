@@ -168,6 +168,77 @@
             text-shadow: 0 0 10px rgba(191, 30, 46, 0.5);
         }
 
+
+        /* 공지 버튼 */
+        .notice-button {
+            cursor: pointer;
+            padding: 12px 22px;
+            background: linear-gradient(to bottom, #c3a36a, #7a6341);
+            color: #0a0a0c;
+            border: 1px solid #e3d9c6;
+            border-radius: 4px;
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 700;
+            font-size: 17px;
+            box-shadow: 0 0 15px rgba(195, 163, 106, 0.3);
+        }
+        .notice-button:hover { filter: brightness(1.1); }
+
+        /* 공지 팝업 */
+        .notice-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(0, 0, 0, 0.82);
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        .notice-modal.open { display: flex; }
+        .notice-modal-content {
+            width: min(620px, 100%);
+            max-height: 85vh;
+            overflow-y: auto;
+            background: #141619;
+            border: 1px solid var(--gold);
+            box-shadow: 0 20px 70px rgba(0,0,0,0.95), 0 0 25px rgba(191,30,46,0.25);
+            padding: 28px;
+            position: relative;
+        }
+        .notice-modal h2 {
+            margin: 0 40px 22px 0;
+            color: var(--gold);
+            font-family: 'Cinzel', 'Noto Serif KR', serif;
+            letter-spacing: 2px;
+        }
+        .notice-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            width: 38px;
+            height: 38px;
+            border: 1px solid #554b3b;
+            background: #1a1c20;
+            color: var(--main-text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .notice-section {
+            padding: 18px 0;
+            border-top: 1px solid rgba(195, 163, 106, 0.2);
+            line-height: 1.8;
+        }
+        .notice-section:first-of-type { border-top: 0; }
+        .notice-title {
+            color: var(--gold);
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .notice-warning { color: #ffdf7e; font-weight: 700; }
+        .notice-danger { color: #ff5c68; font-weight: 700; }
+
         /* 📱 모바일 최적화 */
         @media (max-width: 768px) {
             .wrapper { padding: 0 20px 100px 20px; }
@@ -212,6 +283,7 @@
             <label class="tab" id="t9" for="s9">ㅈ</label>
             <label class="tab" id="t11" for="s11">ㅋ</label>
             <label class="tab" id="t14" for="s14">ㅎ</label>
+            <button type="button" class="notice-button" id="noticeOpen">공지</button>
         </div>
 
         <div class="panels">
@@ -266,6 +338,39 @@
                 <div><div class="box1">희망의 화신이자</div><div class="box2">아우리엘</div></div>
             </div>
         </div>
+
+        <div class="notice-modal" id="noticeModal" role="dialog" aria-modal="true" aria-labelledby="noticeTitle">
+            <div class="notice-modal-content">
+                <button type="button" class="notice-close" id="noticeClose" aria-label="공지 닫기">×</button>
+                <h2 id="noticeTitle">공지</h2>
+
+                <div class="notice-section">
+                    <div class="notice-title">● 할 일</div>
+                    <div>불멸단의 시험: 첫 주 3일간 진행</div>
+                    <div>주간 퀘스트 60개 완료 <span class="notice-warning">(불멸자 시험 3일 완료 후 60개 활성화)</span></div>
+                    <div>칼자루 주화 상인에서 지배력 인장 구매 후 기여</div>
+                </div>
+
+                <div class="notice-section">
+                    <div class="notice-title notice-danger">● ★★★ 주말 금고템 선택 금지</div>
+                    <div class="notice-danger">전 인원 선택 금지</div>
+                    <div>자동 전체 랜덤 배정</div>
+                </div>
+
+                <div class="notice-section">
+                    <div class="notice-title">● 코르부스</div>
+                    <div>첫 주는 월·수·금 8:00~8:30</div>
+                    <div class="notice-danger">★★★ 반드시 공대장이 입장을 외치면 입장하기</div>
+                    <div class="notice-warning">본인이 입장을 누르면 강제로 시작됩니다.</div>
+                </div>
+
+                <div class="notice-section">
+                    <div class="notice-title">● 카이온의 시련</div>
+                    <div>시간이 정해지면 재공지</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -274,6 +379,29 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
+
+        const noticeModal = document.getElementById('noticeModal');
+        const noticeOpen = document.getElementById('noticeOpen');
+        const noticeClose = document.getElementById('noticeClose');
+
+        noticeOpen.addEventListener('click', () => {
+            noticeModal.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeNotice() {
+            noticeModal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        noticeClose.addEventListener('click', closeNotice);
+        noticeModal.addEventListener('click', (event) => {
+            if (event.target === noticeModal) closeNotice();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeNotice();
+        });
+
     </script>
 </body>
 </html>
